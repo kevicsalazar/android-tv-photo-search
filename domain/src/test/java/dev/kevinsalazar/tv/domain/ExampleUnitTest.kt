@@ -1,4 +1,5 @@
-package dev.kevinsalazar.tv.data
+package dev.kevinsalazar.tv.domain
+
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.should
