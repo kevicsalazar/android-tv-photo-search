@@ -1,10 +1,15 @@
+@file:OptIn(ExperimentalTvMaterial3Api::class)
+
 package dev.kevinsalazar.tv.photosearch.screens.viewer
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Surface
 import coil.compose.AsyncImage
 import dev.kevinsalazar.tv.photosearch.screens.viewer.ViewerContract.Event
 import dev.kevinsalazar.tv.photosearch.utils.getViewModel
@@ -23,10 +28,14 @@ fun ViewerView(
         )
     }
 
-    AsyncImage(
-        modifier = Modifier.fillMaxSize(),
-        model = state.url,
-        contentDescription = null,
-        contentScale = ContentScale.Fit
-    )
+    Surface(
+        shape = RectangleShape
+    ) {
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = state.url,
+            contentDescription = null,
+            contentScale = ContentScale.Fit
+        )
+    }
 }

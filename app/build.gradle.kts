@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "dev.kevinsalazar.tv.photosearch"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -53,7 +53,7 @@ android {
     }
     detekt {
         toolVersion = "1.23.6"
-        config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+        config.setFrom(file("config/detekt/detekt.yml"))
         buildUponDefaultConfig = true
     }
 }
@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
 
+    implementation(libs.kotlinDateTime)
     implementation(libs.kotlinCoroutines)
     implementation(libs.coil.compose)
 

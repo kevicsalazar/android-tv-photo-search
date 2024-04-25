@@ -54,9 +54,10 @@ class GalleryViewModel(
     private fun loadPhotos(loadMore: Boolean) {
         viewModelScope.launch {
             handleResult(
+                searchMode = false,
+                loadMore = loadMore,
                 subtitle = textProvider.trendingNow,
-                emptyMessage = textProvider.noResults,
-                loadMore = loadMore
+                emptyMessage = textProvider.noResults
             ) { getPhotosUseCase() }
         }
     }
@@ -65,10 +66,11 @@ class GalleryViewModel(
         currentQuery = query
         viewModelScope.launch {
             handleResult(
+                searchMode = true,
+                loadMore = loadMore,
                 subtitle = textProvider.getSearchResultsFor(currentQuery),
-                emptyMessage = textProvider.getNoResultsFor(currentQuery),
-                loadMore = loadMore
-            ) { searchPhotosUseCase(searchPage++, query) }
+                emptyMessage = textProvider.getNoResultsFor(currentQuery)
+            ) { searchPhotosUseCase(searchPage + 1, query) }
         }
     }
 
@@ -108,6 +110,7 @@ class GalleryViewModel(
     }
 
     private suspend fun handleResult(
+        searchMode: Boolean,
         loadMore: Boolean,
         subtitle: String,
         emptyMessage: String,
@@ -116,12 +119,14 @@ class GalleryViewModel(
         _state.update {
             if (loadMore) {
                 it.copy(
-                    loading = true
+                    loading = true,
+                    searchMode = searchMode
                 )
             } else {
                 it.copy(
                     loading = true,
-                    photos = emptyList()
+                    photos = emptyList(),
+                    searchMode = searchMode
                 )
             }
         }
@@ -139,6 +144,11 @@ class GalleryViewModel(
                 }
             }
             .onFailure { _, e ->
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
                 Log.e("Errorrrrrrrr", e.stackTraceToString())
             }
     }

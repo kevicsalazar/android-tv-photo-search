@@ -3,6 +3,7 @@ package dev.kevinsalazar.tv.photosearch.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
+val Cyan80 = Color(0xFF38919B)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 
