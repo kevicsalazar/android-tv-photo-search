@@ -1,4 +1,4 @@
-package dev.kevinsalazar.tv.data
+package dev.kevinsalazar.tv.photosearch
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.should
