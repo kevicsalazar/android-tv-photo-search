@@ -13,7 +13,6 @@ data class PhotoDTO(
     val width: Int,
     val height: Int,
     val color: String,
-    val downloads: Int,
     val likes: Int,
     val description: String?,
     val urls: Urls,

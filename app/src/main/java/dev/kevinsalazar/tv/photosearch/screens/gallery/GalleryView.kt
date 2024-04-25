@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTvMaterial3Api::class, ExperimentalTvMaterial3Api::class)
-
 package dev.kevinsalazar.tv.photosearch.screens.gallery
 
 import androidx.activity.compose.BackHandler
@@ -74,6 +72,10 @@ fun GalleryView(
     )
 }
 
+@OptIn(
+    ExperimentalTvMaterial3Api::class,
+    ExperimentalTvMaterial3Api::class
+)
 @Composable
 private fun GalleryView(
     state: GalleryContract.State,

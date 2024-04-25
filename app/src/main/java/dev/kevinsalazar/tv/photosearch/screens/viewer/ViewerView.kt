@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTvMaterial3Api::class)
-
 package dev.kevinsalazar.tv.photosearch.screens.viewer
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +13,7 @@ import dev.kevinsalazar.tv.photosearch.screens.viewer.ViewerContract.Event
 import dev.kevinsalazar.tv.photosearch.utils.getViewModel
 import dev.kevinsalazar.tv.photosearch.utils.use
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ViewerView(
     viewModel: ViewerViewModel = getViewModel()

@@ -13,9 +13,11 @@ object PhotoDataMapper {
         return Photo(
             id = photo.id,
             description = photo.description,
+            username = photo.user.username,
+            createdAt = photo.createdAt,
             urls = Photo.Urls(
                 raw = photo.urls.raw,
-                thumb = photo.urls.thumb
+                thumb = photo.urls.small
             )
         )
     }

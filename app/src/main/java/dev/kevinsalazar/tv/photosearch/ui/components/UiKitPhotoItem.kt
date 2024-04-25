@@ -40,11 +40,6 @@ fun UiKitPhotoItem(
 
     var isFocused by remember { mutableStateOf(false) }
 
-    val colorStops = arrayOf(
-        0.0f to Color.Transparent,
-        1f to Color.Black,
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +62,12 @@ fun UiKitPhotoItem(
         )
         Column(
             modifier = Modifier
-                .background(Brush.verticalGradient(*colorStops))
+                .background(
+                    Brush.verticalGradient(
+                        0.0f to Color.Transparent,
+                        1f to Color.Black,
+                    )
+                )
                 .fillMaxWidth()
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
