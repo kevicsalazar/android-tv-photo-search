@@ -9,10 +9,10 @@ interface GalleryContract :
 
     @Stable
     data class State(
-        val loaded: Boolean = false,
+        val initialized: Boolean = false,
         val subtitle: String = "",
         val photos: List<PhotoModel> = emptyList(),
-        val loading: Boolean = true,
+        val loading: Boolean = false,
         val searchMode: Boolean = false
     )
 

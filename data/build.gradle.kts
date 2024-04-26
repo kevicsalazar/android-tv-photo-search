@@ -1,3 +1,7 @@
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinSerialization)
@@ -17,12 +21,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            val accessKey = getProperty("ACCESS_KEY") ?: System.getenv("ACCESS_KEY")
+            buildConfigField("String", "ACCESS_KEY", "\"${accessKey}\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField("String", "ACCESS_KEY", "\"${System.getenv("ACCESS_KEY")}\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
     }
     compileOptions {
@@ -36,6 +48,9 @@ android {
         unitTests.all {
             it.useJUnitPlatform()
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -53,4 +68,14 @@ dependencies {
     testImplementation(libs.kotest)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+fun getProperty(name: String): String? {
+    return try {
+        val props = Properties()
+        props.load(FileInputStream(rootProject.file("local.properties")))
+        props.getProperty(name)
+    } catch (e: FileNotFoundException) {
+        return null
+    }
 }

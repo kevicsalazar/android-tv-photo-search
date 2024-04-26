@@ -13,11 +13,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import dev.kevinsalazar.tv.photosearch.R
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -42,11 +44,13 @@ fun UiKitSearchBar(
                 query = it
             },
             onSearch = {
-                focusManager.clearFocus()
-                onSearch.invoke(it)
+                if (it.isNotBlank()) {
+                    focusManager.clearFocus()
+                    onSearch.invoke(it)
+                }
             },
             placeholder = {
-                Text(text = "Search movies")
+                Text(text = stringResource(id = R.string.search_placeholder))
             },
             leadingIcon = {
                 Icon(
