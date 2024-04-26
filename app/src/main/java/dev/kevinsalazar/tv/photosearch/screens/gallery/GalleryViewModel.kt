@@ -124,7 +124,7 @@ class GalleryViewModel(
                 )
             } else {
                 it.copy(
-                    loading = false,
+                    loading = true,
                     photos = emptyList(),
                     searchMode = searchMode
                 )
