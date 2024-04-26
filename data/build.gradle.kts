@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinSerialization)
@@ -17,12 +20,23 @@ android {
     }
 
     buildTypes {
+        debug {
+
+            val props = Properties()
+            props.load(FileInputStream(rootProject.file("local.properties")))
+
+            buildConfigField("String", "ACCESS_KEY", "\"${props.getProperty("ACCESS_KEY")}\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField("String", "ACCESS_KEY", "\"${System.getenv("ACCESS_KEY")}\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
     }
     compileOptions {
@@ -36,6 +50,9 @@ android {
         unitTests.all {
             it.useJUnitPlatform()
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
