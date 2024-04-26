@@ -22,7 +22,8 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "ACCESS_KEY", "\"${System.getenv("ACCESS_KEY")}\"")
+            val accessKey = getProperty("ACCESS_KEY") ?: System.getenv("ACCESS_KEY")
+            buildConfigField("String", "ACCESS_KEY", "\"${accessKey}\"")
             buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
         release {
@@ -69,12 +70,12 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-fun getProperty(name: String): String {
+fun getProperty(name: String): String? {
     return try {
         val props = Properties()
         props.load(FileInputStream(rootProject.file("local.properties")))
         props.getProperty(name)
     } catch (e: FileNotFoundException) {
-        System.getenv(name)
+        return null
     }
 }
