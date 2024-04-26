@@ -12,7 +12,7 @@ object PhotoDataMapper {
     private fun map(photo: PhotoDTO): Photo {
         return Photo(
             id = photo.id,
-            description = photo.description,
+            description = photo.description ?: photo.altDescription,
             username = photo.user.username,
             createdAt = photo.createdAt,
             urls = Photo.Urls(

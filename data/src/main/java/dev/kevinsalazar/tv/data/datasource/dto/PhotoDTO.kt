@@ -15,6 +15,8 @@ data class PhotoDTO(
     val color: String,
     val likes: Int,
     val description: String?,
+    @SerialName("alt_description")
+    val altDescription: String?,
     val urls: Urls,
     val user: User
 ) {
