@@ -1,4 +1,5 @@
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.util.Properties
 
 plugins {
@@ -21,11 +22,7 @@ android {
 
     buildTypes {
         debug {
-
-            val props = Properties()
-            props.load(FileInputStream(rootProject.file("local.properties")))
-
-            buildConfigField("String", "ACCESS_KEY", "\"${props.getProperty("ACCESS_KEY")}\"")
+            buildConfigField("String", "ACCESS_KEY", "\"${getProperty("ACCESS_KEY")}\"")
             buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
         release {
@@ -35,7 +32,7 @@ android {
                 "proguard-rules.pro"
             )
 
-            buildConfigField("String", "ACCESS_KEY", "\"${System.getenv("ACCESS_KEY")}\"")
+            buildConfigField("String", "ACCESS_KEY", "\"${getProperty("ACCESS_KEY")}\"")
             buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
     }
@@ -70,4 +67,14 @@ dependencies {
     testImplementation(libs.kotest)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+fun getProperty(name: String): String {
+    return try {
+        val props = Properties()
+        props.load(FileInputStream(rootProject.file("local.properties")))
+        props.getProperty(name)
+    } catch (e: FileNotFoundException) {
+        System.getenv("ACCESS_KEY")
+    }
 }
