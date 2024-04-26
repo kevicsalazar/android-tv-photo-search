@@ -13,7 +13,8 @@ val dummyPhotos
             urls = Photo.Urls(
                 raw = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d",
                 thumb = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg&w=200&fit=max"
-            )
+            ),
+            tags = emptyList()
         ),
         Photo(
             id = "DwuAsdfSOIk",
@@ -23,6 +24,7 @@ val dummyPhotos
             urls = Photo.Urls(
                 raw = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d",
                 thumb = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg&w=200&fit=max"
-            )
+            ),
+            tags = emptyList()
         )
     )

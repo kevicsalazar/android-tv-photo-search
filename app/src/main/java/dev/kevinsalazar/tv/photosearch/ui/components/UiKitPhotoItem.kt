@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,49 +71,50 @@ fun UiKitPhotoItem(
             contentDescription = title,
             contentScale = ContentScale.Crop
         )
-        Column(
-            modifier = Modifier
-                .background(
-                    Brush.verticalGradient(
-                        0.0f to Color.Transparent,
-                        1f to Color.Black,
-                    )
+        UiKitPhotoItemContent(
+            title = title,
+            subtitle = subtitle,
+            tags = tags
+        )
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+fun UiKitPhotoItemContent(
+    title: String,
+    subtitle: String,
+    tags: List<String>,
+) {
+    Column(
+        modifier = Modifier
+            .background(
+                Brush.verticalGradient(
+                    0.0f to Color.Transparent,
+                    1f to Color.Black,
                 )
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            )
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.White
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                items(tags) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape =  RoundedCornerShape(4.dp)
-                            )
-                            .padding(4.dp)
-                    ) {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                }
+            items(tags) {
+                UiKitTag(text = it)
             }
         }
     }
