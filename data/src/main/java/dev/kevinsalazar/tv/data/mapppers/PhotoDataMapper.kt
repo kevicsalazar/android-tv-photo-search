@@ -18,7 +18,10 @@ object PhotoDataMapper {
             urls = Photo.Urls(
                 raw = photo.urls.raw,
                 thumb = photo.urls.small
-            )
+            ),
+            tags = photo.tags?.map {
+                Photo.Tag(title = it.title)
+            } ?: emptyList()
         )
     }
 }

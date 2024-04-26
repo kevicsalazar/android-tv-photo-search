@@ -143,7 +143,8 @@ class GalleryViewModel(
                     )
                 }
             }
-            .onFailure { error, _ ->
+            .onFailure { error, e ->
+                e.printStackTrace()
                 _state.update {
                     it.copy(
                         loading = false,

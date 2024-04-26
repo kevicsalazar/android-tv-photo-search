@@ -19,6 +19,7 @@ class GalleryMapper {
             subtitle = "${photo.username} / $date",
             thumb = photo.urls.thumb,
             raw = photo.urls.raw,
+            tags = photo.tags.map { it.title }.take(3)
         )
     }
 
