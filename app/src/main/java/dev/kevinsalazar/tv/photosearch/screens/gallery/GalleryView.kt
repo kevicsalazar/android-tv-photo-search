@@ -48,7 +48,7 @@ fun GalleryView(
     val navController = LocalNavController.current
 
     LaunchedEffect(Unit) {
-        if (!state.loaded) {
+        if (!state.initialized) {
             event.invoke(Event.OnLoadPhotos)
         }
     }

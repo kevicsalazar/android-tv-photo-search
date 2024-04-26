@@ -1,6 +1,5 @@
 package dev.kevinsalazar.tv.photosearch.screens.gallery
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.kevinsalazar.tv.domain.entities.Photo
@@ -38,14 +37,14 @@ class GalleryViewModel(
     override val effect = _effect.asSharedFlow()
 
     private var currentQuery = ""
-    private var searchPage = 0
+    private var searchPage = 1
 
     override fun event(event: Event) {
         when (event) {
             is Event.OnLoadPhotos -> loadPhotos(false)
-            is Event.OnPhotoClick -> photoClick(event.photo)
             is Event.OnSearchPhotos -> searchPhotos(event.query, false)
             is Event.OnLoadMorePhotos -> loadMorePhotos()
+            is Event.OnPhotoClick -> photoClick(event.photo)
             is Event.OnSearchMode -> searchMode()
             is Event.OnBackHandler -> onBackHandler()
         }
@@ -70,20 +69,13 @@ class GalleryViewModel(
                 loadMore = loadMore,
                 subtitle = textProvider.getSearchResultsFor(currentQuery),
                 emptyMessage = textProvider.getNoResultsFor(currentQuery)
-            ) { searchPhotosUseCase(searchPage + 1, query) }
-        }
-    }
-
-    private fun searchMode() {
-        _state.update {
-            it.copy(
-                searchMode = true
-            )
+            ) { searchPhotosUseCase(searchPage, currentQuery) }
         }
     }
 
     private fun loadMorePhotos() {
         if (state.value.searchMode) {
+            searchPage++
             searchPhotos(currentQuery, true)
         } else {
             loadPhotos(true)
@@ -97,11 +89,19 @@ class GalleryViewModel(
         }
     }
 
+    private fun searchMode() {
+        _state.update {
+            it.copy(
+                searchMode = true
+            )
+        }
+    }
+
     private fun onBackHandler() {
         viewModelScope.launch {
             if (state.value.searchMode) {
                 currentQuery = ""
-                searchPage = 0
+                searchPage = 1
                 loadPhotos(false)
             } else {
                 _effect.emit(Effect.OnBackHandler)
@@ -124,7 +124,7 @@ class GalleryViewModel(
                 )
             } else {
                 it.copy(
-                    loading = true,
+                    loading = false,
                     photos = emptyList(),
                     searchMode = searchMode
                 )
@@ -132,24 +132,23 @@ class GalleryViewModel(
         }
         block.invoke()
             .onSuccess { photos ->
-                val incomingPhotos = galleryMapper.map(photos)
                 _state.update {
+                    val incomingPhotos = galleryMapper.map(photos)
                     val newPhotos = if (loadMore) it.photos + incomingPhotos else incomingPhotos
                     it.copy(
-                        loaded = true,
+                        initialized = true,
                         subtitle = if (newPhotos.isEmpty()) emptyMessage else subtitle,
                         photos = newPhotos,
                         loading = false
                     )
                 }
             }
-            .onFailure { _, e ->
+            .onFailure { _, _ ->
                 _state.update {
                     it.copy(
                         loading = false
                     )
                 }
-                Log.e("Errorrrrrrrr", e.stackTraceToString())
             }
     }
 }
