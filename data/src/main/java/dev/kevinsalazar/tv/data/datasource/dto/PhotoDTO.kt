@@ -14,9 +14,12 @@ data class PhotoDTO(
     val height: Int,
     val color: String,
     val likes: Int,
-    val description: String?,
+    val description: String? = null,
+    @SerialName("alt_description")
+    val altDescription: String?,
     val urls: Urls,
-    val user: User
+    val user: User,
+    val tags: List<Tag>? = null
 ) {
 
     @Serializable
@@ -33,5 +36,10 @@ data class PhotoDTO(
         val id: String,
         val username: String,
         val name: String,
+    )
+
+    @Serializable
+    data class Tag(
+        val title: String
     )
 }

@@ -5,5 +5,6 @@ data class PhotoModel(
     val title: String,
     val subtitle: String,
     val thumb: String,
-    val raw: String
+    val raw: String,
+    val tags: List<String>
 )

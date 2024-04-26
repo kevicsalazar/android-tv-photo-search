@@ -12,13 +12,16 @@ object PhotoDataMapper {
     private fun map(photo: PhotoDTO): Photo {
         return Photo(
             id = photo.id,
-            description = photo.description,
+            description = photo.description ?: photo.altDescription,
             username = photo.user.username,
             createdAt = photo.createdAt,
             urls = Photo.Urls(
                 raw = photo.urls.raw,
                 thumb = photo.urls.small
-            )
+            ),
+            tags = photo.tags?.map {
+                Photo.Tag(title = it.title)
+            } ?: emptyList()
         )
     }
 }

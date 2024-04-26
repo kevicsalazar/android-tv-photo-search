@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter
 
 class GalleryMapper {
 
+    companion object {
+        private const val TAX_TAGS = 3
+    }
+
     fun map(photos: List<Photo>): List<PhotoModel> {
         return photos.map(::map)
     }
@@ -19,6 +23,8 @@ class GalleryMapper {
             subtitle = "${photo.username} / $date",
             thumb = photo.urls.thumb,
             raw = photo.urls.raw,
+            tags = photo.tags.map { it.title }
+                .take(TAX_TAGS)
         )
     }
 

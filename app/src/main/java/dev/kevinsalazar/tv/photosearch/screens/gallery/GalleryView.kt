@@ -154,6 +154,7 @@ private fun GalleryGridView(
                 title = photo.title,
                 subtitle = photo.subtitle,
                 url = photo.thumb,
+                tags = photo.tags,
                 onClick = {
                     event.invoke(Event.OnPhotoClick(photo))
                 }
