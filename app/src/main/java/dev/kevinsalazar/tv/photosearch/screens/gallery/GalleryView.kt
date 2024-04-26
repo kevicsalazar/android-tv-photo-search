@@ -112,7 +112,6 @@ private fun GalleryView(
                 state = state,
                 event = event
             )
-
             UiKitLoading(
                 modifier = Modifier
                     .fillMaxWidth()

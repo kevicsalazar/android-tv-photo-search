@@ -143,10 +143,11 @@ class GalleryViewModel(
                     )
                 }
             }
-            .onFailure { _, _ ->
+            .onFailure { error, _ ->
                 _state.update {
                     it.copy(
-                        loading = false
+                        loading = false,
+                        subtitle = textProvider.getErrorMessage(error)
                     )
                 }
             }

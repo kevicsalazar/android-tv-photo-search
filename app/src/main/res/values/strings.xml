@@ -5,4 +5,7 @@
     <string name="search_results_for">Search Results for \"%1$s\"</string>
     <string name="no_results_for">No Results for \"%1$s\"</string>
     <string name="search_placeholder">Search photos</string>
+    <string name="no_internet_error">Check your connection and try again!</string>
+    <string name="access_denied_error">Access denied. Please sign in with proper credentials</string>
+    <string name="generic_error">Oops! Something broke. We\'re working on it!</string>
 </resources>

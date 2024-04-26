@@ -1,6 +1,7 @@
 package dev.kevinsalazar.tv.photosearch.screens.gallery
 
 import app.cash.turbine.test
+import dev.kevinsalazar.tv.domain.errors.DataError
 import dev.kevinsalazar.tv.domain.usecases.GetPhotosUseCase
 import dev.kevinsalazar.tv.domain.usecases.SearchPhotosUseCase
 import dev.kevinsalazar.tv.domain.values.Result
@@ -19,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(CoroutinesTestExtension::class)
@@ -32,7 +34,7 @@ class GalleryViewModelTest {
     }
 
     @Test
-    fun `GIVEN the ViewModel waits -WHEN the event OnLoadPhotos comes THEN load photos with result`() =
+    fun `GIVEN ViewModel WHEN event OnLoadPhotos comes THEN load photos with result`() =
         runTest {
             coEvery { getPhotosUseCase() } returns Result.Success(dummyPhotos)
 
@@ -60,7 +62,39 @@ class GalleryViewModelTest {
         }
 
     @Test
-    fun `GIVEN the ViewModel waits WHEN the event OnSearchPhotos comes THEN search photos with result`() =
+    fun `GIVEN ViewModel WHEN event OnLoadPhotos comes THEN show error message`() =
+        runTest {
+            coEvery {
+                getPhotosUseCase()
+            } returns Result.Error(DataError.Network.NO_INTERNET, IOException())
+            every {
+                textProvider.getErrorMessage(DataError.Network.NO_INTERNET)
+            } returns "Check your connection and try again!"
+
+            val viewModel = GalleryViewModel(
+                getPhotosUseCase = getPhotosUseCase,
+                searchPhotosUseCase = searchPhotosUseCase,
+                galleryMapper = GalleryMapper(),
+                textProvider = textProvider
+            )
+
+            viewModel.state.test {
+
+                viewModel.event(Event.OnLoadPhotos)
+
+                skipItems(1)
+
+                with(awaitItem()) {
+                    subtitle shouldBe "Check your connection and try again!"
+                    photos shouldHaveSize 0
+                    loading shouldBe false
+                    searchMode shouldBe false
+                }
+            }
+        }
+
+    @Test
+    fun `GIVEN ViewModel WHEN event OnSearchPhotos comes THEN search photos with result`() =
         runTest {
             coEvery { searchPhotosUseCase(1, "flags") } returns Result.Success(dummyPhotos)
 
@@ -91,7 +125,7 @@ class GalleryViewModelTest {
         }
 
     @Test
-    fun `GIVEN the ViewModel waits - WHEN the event OnPhotoClick comes THEN navigate to Viewer`() =
+    fun `GIVEN ViewModel WHEN event OnPhotoClick comes THEN navigate to Viewer`() =
         runTest {
 
             val photoModel = mockk<PhotoModel> {
@@ -116,7 +150,7 @@ class GalleryViewModelTest {
         }
 
     @Test
-    fun `GIVEN the ViewModel waits - WHEN the event OnSearchMode comes THEN enabled search mode`() =
+    fun `GIVEN ViewModel WHEN event OnSearchMode comes THEN enabled search mode`() =
         runTest {
 
             val viewModel = GalleryViewModel(
@@ -135,6 +169,26 @@ class GalleryViewModelTest {
                 with(awaitItem()) {
                     searchMode shouldBe true
                 }
+            }
+        }
+
+
+    @Test
+    fun `GIVEN ViewModel WHEN event OnBackHandler comes without search mode THEN enabled search mode`() =
+        runTest {
+
+            val viewModel = GalleryViewModel(
+                getPhotosUseCase = getPhotosUseCase,
+                searchPhotosUseCase = searchPhotosUseCase,
+                galleryMapper = GalleryMapper(),
+                textProvider = textProvider
+            )
+
+            viewModel.effect.test {
+
+                viewModel.event(Event.OnBackHandler)
+
+                awaitItem() shouldBe GalleryContract.Effect.OnBackHandler
             }
         }
 
