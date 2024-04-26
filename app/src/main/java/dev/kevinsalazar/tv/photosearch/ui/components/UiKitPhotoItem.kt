@@ -21,12 +21,15 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import dev.kevinsalazar.tv.photosearch.R
 
 private const val TvAspectRatio = 16 / 9f
 
@@ -57,7 +60,11 @@ fun UiKitPhotoItem(
     ) {
         AsyncImage(
             modifier = Modifier.fillMaxSize(),
-            model = url,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(url)
+                .placeholder(R.drawable.bg_placeholder)
+                .crossfade(true)
+                .build(),
             contentDescription = title,
             contentScale = ContentScale.Crop
         )

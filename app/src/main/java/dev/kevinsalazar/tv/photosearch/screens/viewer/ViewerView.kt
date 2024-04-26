@@ -9,7 +9,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import dev.kevinsalazar.tv.photosearch.screens.viewer.ViewerContract.Event
+import dev.kevinsalazar.tv.photosearch.ui.components.UiKitLoading
 import dev.kevinsalazar.tv.photosearch.utils.getViewModel
 import dev.kevinsalazar.tv.photosearch.utils.use
 
@@ -30,11 +32,14 @@ fun ViewerView(
     Surface(
         shape = RectangleShape
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             modifier = Modifier.fillMaxSize(),
             model = state.url,
             contentDescription = null,
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Fit,
+            loading = {
+                UiKitLoading(enabled = true)
+            }
         )
     }
 }
