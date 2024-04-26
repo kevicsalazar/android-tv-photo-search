@@ -75,6 +75,6 @@ fun getProperty(name: String): String {
         props.load(FileInputStream(rootProject.file("local.properties")))
         props.getProperty(name)
     } catch (e: FileNotFoundException) {
-        System.getenv("ACCESS_KEY")
+        System.getenv(name)
     }
 }
