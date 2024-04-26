@@ -22,7 +22,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "ACCESS_KEY", "\"${getProperty("ACCESS_KEY")}\"")
+            buildConfigField("String", "ACCESS_KEY", "\"${System.getenv("ACCESS_KEY")}\"")
             buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
         release {
@@ -32,7 +32,7 @@ android {
                 "proguard-rules.pro"
             )
 
-            buildConfigField("String", "ACCESS_KEY", "\"${getProperty("ACCESS_KEY")}\"")
+            buildConfigField("String", "ACCESS_KEY", "\"${System.getenv("ACCESS_KEY")}\"")
             buildConfigField("String", "BASE_URL", "\"https://api.unsplash.com/\"")
         }
     }
