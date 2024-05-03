@@ -1,9 +1,11 @@
 package dev.kevinsalazar.tv.photosearch.utils
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.kevinsalazar.tv.domain.errors.DataError
 import dev.kevinsalazar.tv.domain.errors.Error
 import dev.kevinsalazar.tv.photosearch.R
+import javax.inject.Inject
 
 interface TextProvider {
     val trendingNow: String
@@ -13,8 +15,8 @@ interface TextProvider {
     fun getErrorMessage(error: Error): String
 }
 
-class DefaultTextProvider(
-    private val context: Context
+class DefaultTextProvider @Inject constructor(
+    @ApplicationContext private val context: Context
 ) : TextProvider {
 
     private val resources by lazy { context.resources }

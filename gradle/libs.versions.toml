@@ -25,8 +25,9 @@ mockk = "1.13.10"
 turbine = "1.1.0"
 paging = "3.2.1"
 room = "2.6.1"
-ksp = "1.9.23-1.0.20"
+ksp = "1.9.20-1.0.14"
 dagger = "2.51.1"
+dagger-compose = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,7 +52,6 @@ androidx-room = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 
-
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-json = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
@@ -68,6 +68,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 daggerHilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
 daggerHilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
+daggerHilt-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "dagger-compose" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

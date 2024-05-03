@@ -1,22 +1,31 @@
 package dev.kevinsalazar.tv.data.di
 
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import dev.kevinsalazar.tv.data.datasource.UnsplashApi
 import dev.kevinsalazar.tv.data.datasource.UnsplashClient
 import dev.kevinsalazar.tv.data.repository.DefaultPhotoRepository
 import dev.kevinsalazar.tv.domain.repository.PhotoRepository
+import javax.inject.Singleton
 
-val dataModule: DataModule get() = DataModuleImpl()
+@Module
+@InstallIn(SingletonComponent::class)
+interface BindingDataModule {
 
-interface DataModule {
-    val api: UnsplashApi
-    val repository: PhotoRepository
+    @Binds
+    fun bindPhotoRepository(repository: DefaultPhotoRepository): PhotoRepository
 }
 
-internal class DataModuleImpl : DataModule {
-    override val api: UnsplashApi by lazy {
-        UnsplashClient.api
-    }
-    override val repository: PhotoRepository by lazy {
-        DefaultPhotoRepository(api)
+@Module
+@InstallIn(SingletonComponent::class)
+object DataModule {
+
+    @Provides
+    @Singleton
+    fun provideApi(): UnsplashApi {
+        return UnsplashClient.api
     }
 }

@@ -8,8 +8,9 @@ import dev.kevinsalazar.tv.domain.entities.Photo
 import dev.kevinsalazar.tv.domain.errors.DataError
 import dev.kevinsalazar.tv.domain.repository.PhotoRepository
 import dev.kevinsalazar.tv.domain.values.Result
+import javax.inject.Inject
 
-class DefaultPhotoRepository(
+class DefaultPhotoRepository @Inject constructor(
     private val api: UnsplashApi
 ) : PhotoRepository {
 

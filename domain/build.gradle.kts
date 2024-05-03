@@ -20,6 +20,8 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
+    implementation(libs.dagger)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotest)
 }

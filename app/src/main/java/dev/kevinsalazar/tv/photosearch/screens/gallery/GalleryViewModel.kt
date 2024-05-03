@@ -2,6 +2,7 @@ package dev.kevinsalazar.tv.photosearch.screens.gallery
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.kevinsalazar.tv.domain.entities.Photo
 import dev.kevinsalazar.tv.domain.errors.Error
 import dev.kevinsalazar.tv.domain.usecases.GetPhotosUseCase
@@ -22,8 +23,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class GalleryViewModel(
+@HiltViewModel
+class GalleryViewModel @Inject constructor(
     private val getPhotosUseCase: GetPhotosUseCase,
     private val searchPhotosUseCase: SearchPhotosUseCase,
     private val galleryMapper: GalleryMapper,

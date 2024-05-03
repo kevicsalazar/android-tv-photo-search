@@ -4,8 +4,9 @@ import dev.kevinsalazar.tv.domain.entities.Photo
 import dev.kevinsalazar.tv.photosearch.screens.gallery.model.PhotoModel
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class GalleryMapper {
+class GalleryMapper @Inject constructor() {
 
     companion object {
         private const val TAX_TAGS = 3

@@ -6,19 +6,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import dev.kevinsalazar.tv.photosearch.screens.viewer.ViewerContract.Event
 import dev.kevinsalazar.tv.photosearch.ui.components.UiKitLoading
-import dev.kevinsalazar.tv.photosearch.utils.getViewModel
 import dev.kevinsalazar.tv.photosearch.utils.use
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ViewerView(
-    viewModel: ViewerViewModel = getViewModel()
+    viewModel: ViewerViewModel = hiltViewModel()
 ) {
 
     val (state, event, _) = use(viewModel)

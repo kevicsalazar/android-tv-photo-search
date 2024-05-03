@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.items
@@ -31,7 +32,6 @@ import dev.kevinsalazar.tv.photosearch.ui.components.UiKitLoading
 import dev.kevinsalazar.tv.photosearch.ui.components.UiKitPhotoItem
 import dev.kevinsalazar.tv.photosearch.ui.components.UiKitSearchBar
 import dev.kevinsalazar.tv.photosearch.utils.LocalNavController
-import dev.kevinsalazar.tv.photosearch.utils.getViewModel
 import dev.kevinsalazar.tv.photosearch.utils.use
 import kotlinx.coroutines.flow.collectLatest
 
@@ -40,7 +40,7 @@ const val GridColumns = 3
 
 @Composable
 fun GalleryView(
-    viewModel: GalleryViewModel = getViewModel()
+    viewModel: GalleryViewModel = hiltViewModel()
 ) {
 
     val (state, event, effect) = use(viewModel = viewModel)
