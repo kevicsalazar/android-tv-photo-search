@@ -33,9 +33,13 @@ fun HostView() {
             composable(
                 Screen.Viewer.route,
                 arguments = listOf(
-                    navArgument("url") {
+                    navArgument("id") {
                         type = NavType.StringType
                         nullable = true
+                    },
+                    navArgument("page") {
+                        type = NavType.IntType
+                        defaultValue = 1
                     }
                 )
             ) { ViewerView() }

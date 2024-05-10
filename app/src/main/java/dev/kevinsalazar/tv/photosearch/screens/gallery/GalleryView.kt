@@ -1,26 +1,31 @@
+@file:OptIn(ExperimentalTvMaterial3Api::class)
+
 package dev.kevinsalazar.tv.photosearch.screens.gallery
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
-import androidx.tv.foundation.lazy.grid.items
-import androidx.tv.foundation.lazy.grid.rememberTvLazyGridState
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
@@ -28,6 +33,7 @@ import androidx.tv.material3.Text
 import dev.kevinsalazar.tv.photosearch.R
 import dev.kevinsalazar.tv.photosearch.screens.gallery.GalleryContract.Effect
 import dev.kevinsalazar.tv.photosearch.screens.gallery.GalleryContract.Event
+import dev.kevinsalazar.tv.photosearch.screens.gallery.model.PhotoModel
 import dev.kevinsalazar.tv.photosearch.ui.components.UiKitLoading
 import dev.kevinsalazar.tv.photosearch.ui.components.UiKitPhotoItem
 import dev.kevinsalazar.tv.photosearch.ui.components.UiKitSearchBar
@@ -35,7 +41,6 @@ import dev.kevinsalazar.tv.photosearch.utils.LocalNavController
 import dev.kevinsalazar.tv.photosearch.utils.use
 import kotlinx.coroutines.flow.collectLatest
 
-const val Buffer = 4
 const val GridColumns = 3
 
 @Composable
@@ -44,13 +49,12 @@ fun GalleryView(
 ) {
 
     val (state, event, effect) = use(viewModel = viewModel)
+    val photos = viewModel.photosState.collectAsLazyPagingItems()
 
     val navController = LocalNavController.current
 
     LaunchedEffect(Unit) {
-        if (!state.initialized) {
-            event.invoke(Event.OnLoadPhotos)
-        }
+        event.invoke(Event.OnLoadPhotos)
     }
 
     LaunchedEffect(effect) {
@@ -68,7 +72,8 @@ fun GalleryView(
 
     GalleryView(
         state = state,
-        event = event
+        event = event,
+        photos = photos
     )
 }
 
@@ -79,7 +84,8 @@ fun GalleryView(
 @Composable
 private fun GalleryView(
     state: GalleryContract.State,
-    event: (Event) -> Unit
+    event: (Event) -> Unit,
+    photos: LazyPagingItems<PhotoModel>
 ) {
     Surface(
         shape = RectangleShape
@@ -109,14 +115,8 @@ private fun GalleryView(
                 style = MaterialTheme.typography.titleMedium
             )
             GalleryGridView(
-                state = state,
+                photos = photos,
                 event = event
-            )
-            UiKitLoading(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                enabled = state.loading
             )
         }
     }
@@ -124,41 +124,62 @@ private fun GalleryView(
 
 @Composable
 private fun GalleryGridView(
-    state: GalleryContract.State,
+    photos: LazyPagingItems<PhotoModel>,
     event: (Event) -> Unit
 ) {
 
-    val gridState = rememberTvLazyGridState()
+    val context = LocalContext.current
 
-    val bottomReached by remember {
-        derivedStateOf {
-            val lastVisibleItem = gridState.layoutInfo.visibleItemsInfo.lastOrNull()
-            lastVisibleItem?.index != 0 && lastVisibleItem?.index == gridState.layoutInfo.totalItemsCount - Buffer
+    LaunchedEffect(photos.loadState) {
+        if (photos.loadState.refresh is LoadState.Error) {
+            Toast.makeText(
+                context,
+                "Error: " + (photos.loadState.refresh as LoadState.Error).error.message,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    LaunchedEffect(bottomReached) {
-        if (bottomReached) {
-            event.invoke(Event.OnLoadMorePhotos)
-        }
-    }
-
-    TvLazyVerticalGrid(
-        state = gridState,
-        columns = TvGridCells.Fixed(GridColumns),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(state.photos) { photo ->
-            UiKitPhotoItem(
-                title = photo.title,
-                subtitle = photo.subtitle,
-                url = photo.thumb,
-                tags = photo.tags,
-                onClick = {
-                    event.invoke(Event.OnPhotoClick(photo))
-                }
+        if (photos.loadState.refresh is LoadState.Loading) {
+            UiKitLoading(
+                modifier = Modifier
+                    .align(Alignment.Center)
             )
+        } else {
+            TvLazyVerticalGrid(
+                columns = TvGridCells.Fixed(GridColumns),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    count = photos.itemCount,
+                    key = photos.itemKey { it.id }
+                ) { index ->
+                    val item = photos[index]
+                    if (item != null) {
+                        UiKitPhotoItem(
+                            title = item.title,
+                            subtitle = item.subtitle,
+                            url = item.thumb,
+                            tags = item.tags,
+                            onClick = {
+                                event.invoke(Event.OnPhotoClick(item.id, index))
+                            }
+                        )
+                    }
+                }
+                item {
+                    if (photos.loadState.append is LoadState.Loading) {
+                        UiKitLoading(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+            }
         }
     }
 }

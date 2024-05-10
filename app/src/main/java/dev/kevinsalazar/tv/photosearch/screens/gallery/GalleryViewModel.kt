@@ -2,14 +2,13 @@ package dev.kevinsalazar.tv.photosearch.screens.gallery
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.kevinsalazar.tv.domain.entities.Photo
-import dev.kevinsalazar.tv.domain.errors.Error
+import dev.kevinsalazar.tv.domain.usecases.GetPageByPosition
 import dev.kevinsalazar.tv.domain.usecases.GetPhotosUseCase
 import dev.kevinsalazar.tv.domain.usecases.SearchPhotosUseCase
-import dev.kevinsalazar.tv.domain.values.Result
-import dev.kevinsalazar.tv.domain.values.onFailure
-import dev.kevinsalazar.tv.domain.values.onSuccess
 import dev.kevinsalazar.tv.photosearch.host.Screen
 import dev.kevinsalazar.tv.photosearch.screens.gallery.GalleryContract.Effect
 import dev.kevinsalazar.tv.photosearch.screens.gallery.GalleryContract.Event
@@ -21,6 +20,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +31,7 @@ import javax.inject.Inject
 class GalleryViewModel @Inject constructor(
     private val getPhotosUseCase: GetPhotosUseCase,
     private val searchPhotosUseCase: SearchPhotosUseCase,
+    private val getPageByPosition: GetPageByPosition,
     private val galleryMapper: GalleryMapper,
     private val textProvider: TextProvider
 ) : ViewModel(), GalleryContract {
@@ -36,65 +39,71 @@ class GalleryViewModel @Inject constructor(
     private val _state = MutableStateFlow(State())
     override val state = _state.asStateFlow()
 
+    val photosState = MutableStateFlow<PagingData<PhotoModel>>(PagingData.empty())
+
     private val _effect = MutableSharedFlow<Effect>()
     override val effect = _effect.asSharedFlow()
 
-    private var currentQuery = ""
-    private var searchPage = 1
-
     override fun event(event: Event) {
         when (event) {
-            is Event.OnLoadPhotos -> loadPhotos(false)
-            is Event.OnSearchPhotos -> searchPhotos(event.query, false)
-            is Event.OnLoadMorePhotos -> loadMorePhotos()
-            is Event.OnPhotoClick -> photoClick(event.photo)
+            is Event.OnLoadPhotos -> loadPhotos()
+            is Event.OnSearchPhotos -> searchPhotos(event.query)
+            is Event.OnPhotoClick -> photoClick(event.id, event.position)
             is Event.OnSearchMode -> searchMode()
             is Event.OnBackHandler -> onBackHandler()
         }
     }
 
-    private fun loadPhotos(loadMore: Boolean) {
+    private fun loadPhotos() {
         viewModelScope.launch {
-            handleResult(
-                searchMode = false,
-                loadMore = loadMore,
-                subtitle = textProvider.trendingNow,
-                emptyMessage = textProvider.noResults
-            ) { getPhotosUseCase() }
+            _state.update { state ->
+                state.copy(
+                    subtitle = textProvider.trendingNow,
+                    searchMode = false
+                )
+            }
+            getPhotosUseCase()
+                .map { it.map(galleryMapper::map) }
+                .distinctUntilChanged()
+                .cachedIn(viewModelScope)
+                .collect {
+                    photosState.value = it
+
+                }
         }
     }
 
-    private fun searchPhotos(query: String, loadMore: Boolean) {
-        currentQuery = query
+    private fun searchPhotos(query: String) {
         viewModelScope.launch {
-            handleResult(
-                searchMode = true,
-                loadMore = loadMore,
-                subtitle = textProvider.getSearchResultsFor(currentQuery),
-                emptyMessage = textProvider.getNoResultsFor(currentQuery)
-            ) { searchPhotosUseCase(searchPage, currentQuery) }
+            searchPhotosUseCase(query)
+                .map { it.map(galleryMapper::map) }
+                .distinctUntilChanged()
+                .cachedIn(viewModelScope)
+                .onStart {
+                    _state.update { state ->
+                        state.copy(
+                            subtitle = textProvider.getSearchResultsFor(query),
+                            searchMode = true
+                        )
+                    }
+                }
+                .collect {
+                    photosState.value = it
+                }
         }
     }
 
-    private fun loadMorePhotos() {
-        if (state.value.searchMode) {
-            searchPage++
-            searchPhotos(currentQuery, true)
-        } else {
-            loadPhotos(true)
-        }
-    }
-
-    private fun photoClick(photo: PhotoModel) {
+    private fun photoClick(id: String, position: Int) {
         viewModelScope.launch {
-            val route = Screen.Viewer.createRoute(photo.raw)
+            val page = getPageByPosition(position)
+            val route = Screen.Viewer.createRoute(id, page)
             _effect.emit(Effect.Navigate(route))
         }
     }
 
     private fun searchMode() {
-        _state.update {
-            it.copy(
+        _state.update { state ->
+            state.copy(
                 searchMode = true
             )
         }
@@ -103,57 +112,10 @@ class GalleryViewModel @Inject constructor(
     private fun onBackHandler() {
         viewModelScope.launch {
             if (state.value.searchMode) {
-                currentQuery = ""
-                searchPage = 1
-                loadPhotos(false)
+                loadPhotos()
             } else {
                 _effect.emit(Effect.OnBackHandler)
             }
         }
-    }
-
-    private suspend fun handleResult(
-        searchMode: Boolean,
-        loadMore: Boolean,
-        subtitle: String,
-        emptyMessage: String,
-        block: suspend () -> Result<List<Photo>, Error>
-    ) {
-        _state.update {
-            if (loadMore) {
-                it.copy(
-                    loading = true,
-                    searchMode = searchMode
-                )
-            } else {
-                it.copy(
-                    loading = true,
-                    photos = emptyList(),
-                    searchMode = searchMode
-                )
-            }
-        }
-        block.invoke()
-            .onSuccess { photos ->
-                _state.update {
-                    val incomingPhotos = galleryMapper.map(photos)
-                    val newPhotos = if (loadMore) it.photos + incomingPhotos else incomingPhotos
-                    it.copy(
-                        initialized = true,
-                        subtitle = if (newPhotos.isEmpty()) emptyMessage else subtitle,
-                        photos = newPhotos,
-                        loading = false
-                    )
-                }
-            }
-            .onFailure { error, e ->
-                e.printStackTrace()
-                _state.update {
-                    it.copy(
-                        loading = false,
-                        subtitle = textProvider.getErrorMessage(error)
-                    )
-                }
-            }
     }
 }

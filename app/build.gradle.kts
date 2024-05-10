@@ -86,6 +86,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
 
     implementation(libs.daggerHilt.compose)
     implementation(libs.daggerHilt.android)

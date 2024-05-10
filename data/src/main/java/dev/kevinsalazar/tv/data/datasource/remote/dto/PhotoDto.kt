@@ -1,10 +1,10 @@
-package dev.kevinsalazar.tv.data.datasource.dto
+package dev.kevinsalazar.tv.data.datasource.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PhotoDTO(
+data class PhotoDto(
     val id: String,
     @SerialName("created_at")
     val createdAt: String,

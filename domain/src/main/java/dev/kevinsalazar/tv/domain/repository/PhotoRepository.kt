@@ -1,10 +1,11 @@
 package dev.kevinsalazar.tv.domain.repository
 
+import androidx.paging.PagingData
 import dev.kevinsalazar.tv.domain.entities.Photo
-import dev.kevinsalazar.tv.domain.errors.DataError
-import dev.kevinsalazar.tv.domain.values.Result
+import kotlinx.coroutines.flow.Flow
 
 interface PhotoRepository {
-    suspend fun getRandomPhotos(): Result<List<Photo>, DataError>
-    suspend fun searchPhotos(page: Int, query: String): Result<List<Photo>, DataError>
+    suspend fun getRandomPhotos(): Flow<PagingData<Photo>>
+    suspend fun searchPhotos(query: String): Flow<PagingData<Photo>>
+    suspend fun getLoadedPhotos(page: Int): Flow<PagingData<Photo>>
 }

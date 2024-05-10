@@ -1,27 +1,32 @@
 package dev.kevinsalazar.tv.data.mapppers
 
-import dev.kevinsalazar.tv.data.datasource.dto.PhotoDTO
+import dev.kevinsalazar.tv.data.datasource.local.entities.PhotoEntity
+import dev.kevinsalazar.tv.data.datasource.remote.dto.PhotoDto
 import dev.kevinsalazar.tv.domain.entities.Photo
 
 object PhotoDataMapper {
 
-    fun map(photos: List<PhotoDTO>): List<Photo> {
-        return photos.map(::map)
+    fun mapToEntity(photoDto: PhotoDto): PhotoEntity {
+        return PhotoEntity(
+            id = photoDto.id,
+            description = photoDto.description,
+            username = photoDto.user.username,
+            createdAt = photoDto.createdAt,
+            url = photoDto.urls.raw,
+            thumbnail = photoDto.urls.regular,
+            tags = photoDto.tags?.map { it.title } ?: emptyList()
+        )
     }
 
-    private fun map(photo: PhotoDTO): Photo {
+    fun map(entity: PhotoEntity): Photo {
         return Photo(
-            id = photo.id,
-            description = photo.description ?: photo.altDescription,
-            username = photo.user.username,
-            createdAt = photo.createdAt,
-            urls = Photo.Urls(
-                raw = photo.urls.raw,
-                thumb = photo.urls.small
-            ),
-            tags = photo.tags?.map {
-                Photo.Tag(title = it.title)
-            } ?: emptyList()
+            id = entity.id,
+            description = entity.description,
+            username = entity.username,
+            createdAt = entity.createdAt,
+            url = entity.url,
+            thumbnail = entity.thumbnail,
+            tags = entity.tags
         )
     }
 }

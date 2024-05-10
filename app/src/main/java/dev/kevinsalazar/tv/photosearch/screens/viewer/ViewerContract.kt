@@ -6,11 +6,11 @@ interface ViewerContract :
     UnidirectionalViewModel<ViewerContract.State, ViewerContract.Event, ViewerContract.Effect> {
 
     data class State(
-        val url: String = ""
+        val initialPosition: Int = 1
     )
 
     sealed interface Event {
-        data object OnLoadPhoto : Event
+        data object OnLoadPhotos : Event
     }
 
     sealed interface Effect

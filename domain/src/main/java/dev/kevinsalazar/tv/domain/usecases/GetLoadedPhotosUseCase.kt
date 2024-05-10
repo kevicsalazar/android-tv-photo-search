@@ -6,11 +6,11 @@ import dev.kevinsalazar.tv.domain.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SearchPhotosUseCase @Inject constructor(
-    private val repository: PhotoRepository
+class GetLoadedPhotosUseCase @Inject constructor(
+    private val photoRepository: PhotoRepository
 ) {
 
-    suspend operator fun invoke(query: String): Flow<PagingData<Photo>> {
-        return repository.searchPhotos(query)
+    suspend operator fun invoke(page: Int): Flow<PagingData<Photo>> {
+        return photoRepository.getLoadedPhotos(page)
     }
 }

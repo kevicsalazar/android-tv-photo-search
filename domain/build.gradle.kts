@@ -21,6 +21,7 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(libs.dagger)
+    implementation(libs.androidx.paging.common)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotest)

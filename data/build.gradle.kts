@@ -65,6 +65,10 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.room)
+    implementation(libs.androidx.room.paging)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.daggerHilt.android)
     ksp(libs.daggerHilt.compiler)
